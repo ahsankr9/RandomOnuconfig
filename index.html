@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ONU Config Generator</title>
+    <style>
+        /* Base Styling - Space reduced */
+        body {
+            font-family: 'Trebuchet MS', sans-serif; 
+            margin: 0;
+            padding: 20px; /* Reduced from 40px */
+            background-color: #f3e5f5; /* Light Purple Background (e.g., a very pale lilac) */
+            color: #333;
+        }
+
+        h1 {
+            color: #673ab7; /* Deep Purple Header Color */
+            border-bottom: 3px solid #673ab7;
+            padding-bottom: 5px;
+            margin-bottom: 5px; /* Reduced from 10px */
+            text-align: center;
+        }
+        
+        /* Prepared By Styling - Big, Bold, and Space reduced */
+        .prepared-by {
+            text-align: center;
+            font-weight: bold;
+            font-size: 20px;
+            color: #9c27b0; /* Deep Purple for emphasis */
+            margin-bottom: 15px; /* Reduced from 25px */
+            font-family: 'Trebuchet MS', sans-serif;
+        }
+
+        /* Container and Card styles - Gap reduced */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px; /* Reduced from 25px to make it more compact */
+        }
+
+        .card {
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+            padding: 25px;
+        }
+        
+        /* Input Areas (Bulk Input Section) */
+        .bulk-input-section {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #e0b4ff; /* Lighter Purple Border */
+            border-radius: 8px;
+            background-color: #fcfcfc;
+        }
+
+        .bulk-input-item {
+            flex: 1;
+        }
+
+        .bulk-input-item label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #4a148c; /* Dark Purple Label Color */
+        }
+
+        .bulk-input-item textarea {
+            width: 100%;
+            height: 120px;
+            padding: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            font-family: 'Trebuchet MS', sans-serif;
+            font-size: 0.9em;
+            resize: vertical;
+        }
+        
+        /* Action Buttons */
+        .action-bar {
+            display: flex;
+            justify-content: flex-start;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .btn {
+            background-color: #9c27b0; /* Primary Purple Button */
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s ease, transform 0.1s;
+            font-family: 'Trebuchet MS', sans-serif;
+        }
+        
+        .btn:hover { background-color: #7b1fa2; transform: translateY(-1px); }
+        .btn-success { background-color: #28a745; }
+        .btn-success:hover { background-color: #1e7e34; }
+        .btn-danger { background-color: #dc3545; }
+        .btn-danger:hover { background-color: #bd2130; }
+
+        /* Data Table Styling */
+        #data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        #data-table th, #data-table td {
+            border: 1px solid #e9ecef;
+            padding: 8px 6px;
+            text-align: center;
+            vertical-align: middle;
+        }
+        
+        #data-table th {
+            background-color: #6a1b9a; /* Darker Purple Header */
+            color: white;
+            font-weight: 600;
+        }
+        
+        /* Editable Fields */
+        #data-table td input[type="text"],
+        #data-table td select {
+            width: 95%;
+            padding: 4px;
+            border: 1px solid #ced4da;
+            border-radius: 3px;
+            font-size: 0.85em;
+            text-align: center;
+            font-family: 'Trebuchet MS', sans-serif; 
+        }
+
+        #data-table td input[type="text"]:focus,
+        #data-table td select:focus {
+            border-color: #9c27b0;
+            outline: none;
+            box-shadow: 0 0 5px rgba(156, 39, 176, 0.5);
+        }
+
+        /* Command Output Styling */
+        #commands-output {
+            margin-top: 15px;
+            padding: 20px;
+            background-color: #4387B6; /* Deep Dark */
+            color: #f8f9fa;
+            border-radius: 8px;
+            white-space: pre;
+            overflow: auto;
+            font-family: 'Trebuchet MS', sans-serif; 
+            font-size: 0.8em;
+            line-height: 1.4;
+            max-height: 600px;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.6);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1><span style="color: #673ab7;"></span> Dynamic ONU Configuration</h1>
+    <div class="prepared-by">Prepared By AHSANUL KABIR</div>
+    <div class="card">
+        <h2>Data Input & Editing</h2>
+        
+        <div class="bulk-input-section">
+            <div class="bulk-input-item">
+                <label for="bulk-mac-sn">MAC Address</label>
+                <textarea id="bulk-mac-sn" placeholder="VSOL0091C43B&#10;VSOL0091C417&#10;VSOL0091C153&#10;..."></textarea>
+            </div>
+            
+            <div class="bulk-input-item">
+                <label for="bulk-vlan">VLAN</label>
+                <textarea id="bulk-vlan" placeholder="10&#10;20&#10;30&#10;..."></textarea>
+            </div>
+
+            <div class="bulk-input-item">
+                <label for="bulk-line-profile">Line_Profile</label>
+                <textarea id="bulk-line-profile" placeholder="10&#10;20&#10;30&#10;..."></textarea>
+            </div>
+            
+            <div class="bulk-input-item" style="flex: 0.8;">
+                <label for="default-profile">Default Profile & Action</label>
+                <input type="text" id="default-profile" placeholder="Profile (e.g. 1_port_onu)" value="1_port_onu" style="margin-bottom: 10px;"/>
+                <button class="btn btn-success" style="width: 100%;" onclick="addBulkData()">➕ Add Input Data</button>
+            </div>
+        </div>
+
+        <div class="action-bar">
+            <button class="btn" onclick="generateCommands()">🔄 Generate/Update Script</button>
+            <button class="btn btn-danger" onclick="clearTable()">🗑️ Clear Data</button>
+        </div>
+        
+        <div style="overflow-x: auto;">
+            <table id="data-table">
+                <thead>
+                    <tr>
+                        <th style="width: 5%;">ONU NO</th>
+                        <th style="width: 18%;">MAC Address</th>
+                        <th style="width: 8%;">VLAN</th>
+                        <th style="width: 8%;">Line Profile</th>
+                        <th style="width: 8%;">Service Profile</th>
+                        <th style="width: 8%;">Gem Port</th>
+                        <th style="width: 8%;">WAN ID</th>
+                        <th style="width: 15%;">Bandwidth</th>
+                        <th style="width: 15%;">VSOL-Profile</th>
+                        <th style="width: 5%;">Action</th>
+                    </tr>
+                </thead>
+                <tbody id="data-body">
+                    </tbody>
+            </table>
+        </div>
+        <small style="display: block; margin-top: 10px; color: #6c757d; font-family: 'Trebuchet MS', sans-serif;">* After editing table fields, click **'Generate/Update Commands'**.</small>
+    </div>
+
+    <div class="card">
+        <h2>Generated Configuration Commands</h2>
+        <button class="btn btn-success" style="margin-top: 0;" onclick="copyCommands()">📋 Copy All Script</button>
+        <pre id="commands-output">Click 'Generate/Update Commands' to see the output.</pre>
+    </div>
+
+</div>
+
+<script>
+    // --- Initial Data (Example) ---
+    const initialData = [
+        [1, 'VSOL0091C43B', 10, 10, 1, 1, 1, '163840/163840', '1_port_onu'],
+        [2, 'VSOL0091C417', 20, 20, 1, 1, 1, '163840/163840', '1_port_onu'],
+        [3, 'VSOL0091C153', 30, 30, 1, 1, 1, '163840/163840', '1_port_onu'],
+    ];
+
+    const headers = [
+        "ONU NO", "MAC Address (VSOL SN)", "VLAN", "Line Profile", "Service Profile", 
+        "Gem Port", "WAN ID", "Bandwidth", "VSOL-Profile"
+    ];
+    
+    const bandwidthOptions = [
+        '102400/102400', 
+        '163840/163840', 
+        '215040/215040'
+    ];
+
+    // --- 1. Table Management Functions ---
+
+    function getNextOnuNo() {
+        const body = document.getElementById('data-body');
+        const rows = Array.from(body.children);
+        if (rows.length === 0) return 1;
+        
+        let maxOnuNo = 0;
+        rows.forEach(row => {
+            const onuInput = row.querySelector('input[data-col-name="ONU NO"]');
+            if (onuInput) {
+                const currentNo = parseInt(onuInput.value);
+                if (!isNaN(currentNo) && currentNo > maxOnuNo) {
+                    maxOnuNo = currentNo;
+                }
+            }
+        });
+        return maxOnuNo + 1;
+    }
+
+    function createTableRow(data, rowIndex) {
+        const tr = document.createElement('tr');
+        tr.id = `row-${rowIndex}`;
+        
+        data.forEach((value, colIndex) => {
+            const td = document.createElement('td');
+            const colName = headers[colIndex];
+
+            if (colName === 'Bandwidth') {
+                // Create Dropdown for Bandwidth
+                const select = document.createElement('select');
+                select.setAttribute('data-col-name', colName);
+                select.setAttribute('data-col-index', colIndex);
+                select.addEventListener('change', generateCommands);
+                
+                bandwidthOptions.forEach(option => {
+                    const optionEl = document.createElement('option');
+                    optionEl.value = option;
+                    optionEl.textContent = option;
+                    if (option === value) {
+                        optionEl.selected = true;
+                    }
+                    select.appendChild(optionEl);
+                });
+                td.appendChild(select);
+
+            } else {
+                // Create Input Field for other columns
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.value = value;
+                input.setAttribute('data-col-name', colName);
+                input.setAttribute('data-col-index', colIndex);
+                input.addEventListener('input', generateCommands);
+                td.appendChild(input);
+            }
+            tr.appendChild(td);
+        });
+
+        // Add the delete button column
+        const deleteTd = document.createElement('td');
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = 'btn btn-danger';
+        deleteBtn.style.padding = '5px 10px';
+        deleteBtn.textContent = 'X';
+        deleteBtn.onclick = () => deleteRow(tr.id);
+        deleteTd.appendChild(deleteBtn);
+        tr.appendChild(deleteTd);
+
+        return tr;
+    }
+
+    // Function to render all data into the editable table
+    function renderTable(data) {
+        const body = document.getElementById('data-body');
+        body.innerHTML = '';
+        
+        data.forEach((row, index) => {
+            body.appendChild(createTableRow(row, index));
+        });
+
+        generateCommands();
+    }
+    
+    // Function to delete a row
+    function deleteRow(rowId) {
+        document.getElementById('data-body').removeChild(document.getElementById(rowId));
+        generateCommands();
+    }
+
+    // Function to clear all rows
+    function clearTable() {
+        if (confirm("Are you sure you want to clear ALL data from the table?")) {
+            document.getElementById('data-body').innerHTML = '';
+            document.getElementById('commands-output').textContent = "Table cleared. Add data to generate commands.";
+        }
+    }
+
+    // Function to add multiple MACs, VLANs, and Line Profiles from the textareas
+    function addBulkData() {
+        const macArea = document.getElementById('bulk-mac-sn');
+        const vlanArea = document.getElementById('bulk-vlan');
+        const lineProfileArea = document.getElementById('bulk-line-profile');
+        
+        const macs = macArea.value.split('\n').map(m => m.trim()).filter(m => m.length > 0);
+        const vlans = vlanArea.value.split('\n').map(v => v.trim()).filter(v => v.length > 0);
+        const lineProfiles = lineProfileArea.value.split('\n').map(lp => lp.trim()).filter(lp => lp.length > 0);
+        
+        const defaultProfile = document.getElementById('default-profile').value || '1_port_onu';
+
+        const dataLength = macs.length;
+        if (dataLength === 0) {
+            alert("Please input at least one MAC Address.");
+            return;
+        }
+
+        const body = document.getElementById('data-body');
+        let rowIndex = body.children.length;
+
+        for (let i = 0; i < dataLength; i++) {
+            const nextOnuNo = getNextOnuNo();
+            
+            // Get VLAN and Line Profile, prioritizing the bulk input, then using the first value if needed, otherwise default.
+            const vlan = vlans[i] || vlans[0] || '100';
+            const line_profile = lineProfiles[i] || lineProfiles[0] || vlan;
+            
+            // Default values for a new row
+            const newRowData = [
+                nextOnuNo,
+                macs[i],
+                vlan,
+                line_profile,
+                1, // Service Profile
+                1, // Gem Port
+                1, // WAN ID
+                '163840/163840',
+                defaultProfile
+            ];
+            
+            body.appendChild(createTableRow(newRowData, rowIndex++));
+        }
+
+        // Clear the bulk input areas (optional, but good practice)
+        macArea.value = '';
+        vlanArea.value = '';
+        lineProfileArea.value = '';
+        generateCommands();
+    }
+
+
+    // --- 2. Command Generation Function ---
+
+    function generateCommands() {
+        const body = document.getElementById('data-body');
+        const rows = Array.from(body.children);
+        let output = "";
+
+        if (rows.length === 0) {
+             document.getElementById('commands-output').textContent = "No data available to generate commands. Please add rows to the table.";
+             return;
+        }
+
+        // 1. Extract data from the editable table
+        const currentData = rows.map(row => {
+            const fields = Array.from(row.querySelectorAll('input[type="text"], select'));
+            
+            const values = fields.map(field => {
+                const colName = field.getAttribute('data-col-name');
+                const value = field.value.trim();
+                
+                // Fields expected to be numbers
+                if (['ONU NO', 'VLAN', 'Line Profile', 'Service Profile', 'Gem Port', 'WAN ID'].includes(colName)) {
+                    return isNaN(parseInt(value)) ? value : parseInt(value);
+                }
+                return value;
+            });
+            return values;
+        });
+
+        // 2. Process data and generate command blocks
+
+        let addCommands = [];
+        let profileCommands = [];
+        let portVLANCommands = [];
+        let loopDetectCommands = [];
+        let upstreamRateCommands = [];
+        let downstreamRateCommands = [];
+
+        currentData.forEach(row => {
+            const onu_no = row[0];
+            const sn = row[1];
+            const vlan = row[2];
+            const line_id = row[3];
+            const profile = row[8];
+            const bandwidth = row[7];
+            
+            const rateLimit = bandwidth.toString().split('/').map(s => s.trim());
+            const cir = rateLimit[0] || '163840';
+            const pir = rateLimit[1] || '163840';
+            
+            // Basic Validation
+            if (!onu_no || !sn || isNaN(onu_no) || !vlan || isNaN(vlan)) return;
+
+            // 1. onu add commands
+            addCommands.push(`onu add ${onu_no} profile ${profile} sn ${sn}`);
+            
+            // 2. onu profile line id commands
+            profileCommands.push(`onu ${onu_no} profile line id ${line_id}`);
+
+            // 3. onu portvlan commands
+            portVLANCommands.push(`onu ${onu_no} portvlan eth 1 mode tag vlan ${vlan} pri 0`);
+
+            // 4. onu loopdetect disable commands
+            loopDetectCommands.push(`onu ${onu_no} eth 1 loopdetect disable`);
+
+            // 5. onu upstream-rate-limit commands
+            upstreamRateCommands.push(`onu ${onu_no} eth 1 upstream-rate-limit cir ${cir} pir ${pir}`);
+
+            // 6. onu downstream-rate-limit commands
+            downstreamRateCommands.push(`onu ${onu_no} eth 1 downstream-rate-limit cir ${pir} pir ${pir}`);
+        });
+
+        // 3. Combine all command blocks with a single blank line between blocks
+        let commandBlocks = [
+            addCommands,
+            profileCommands,
+            portVLANCommands,
+            loopDetectCommands,
+            upstreamRateCommands,
+            downstreamRateCommands
+        ];
+
+        // Format: join commands within block by newline, then join blocks by double newline
+        output = commandBlocks.filter(block => block.length > 0)
+                              .map(block => block.join('\n'))
+                              .join('\n\n');
+
+        document.getElementById('commands-output').textContent = output;
+    }
+
+    // --- 3. Utility Functions ---
+    
+    function copyCommands() {
+        const preElement = document.getElementById('commands-output');
+        const commands = preElement.textContent;
+        
+        navigator.clipboard.writeText(commands).then(() => {
+            alert('✅ All commands copied to clipboard!');
+        }).catch(err => {
+            console.error('Copy failed: ', err);
+            alert('❌ Failed to copy commands. Please copy manually from the text box.');
+        });
+    }
+
+    // --- 4. Initialization ---
+    window.onload = () => {
+        renderTable(initialData);
+    };
+</script>
+
+</body>
+</html>
